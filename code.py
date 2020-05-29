@@ -8,7 +8,7 @@ from math import exp
 # Load a CSV file
 def load_csv(filename):
 	dataset = list()
-	with open(filename, 'r') as file:
+	with open(filename, 'r', encoding="utf-8-sig") as file:
 		csv_reader = reader(file)
 		for row in csv_reader:
 			if not row:
@@ -180,7 +180,7 @@ def back_propagation(train, test, l_rate, n_epoch, n_hidden):
 # Test Backprop on Seeds dataset
 seed(1)
 # load and prepare data
-filename = 'seeds_dataset.csv'
+filename = 'wdbc_1.csv'
 dataset = load_csv(filename)
 for i in range(len(dataset[0])-1):
 	str_column_to_float(dataset, i)
@@ -191,8 +191,8 @@ minmax = dataset_minmax(dataset)
 normalize_dataset(dataset, minmax)
 # evaluate algorithm
 n_folds = 5
-l_rate = 0.3
-n_epoch = 500
+l_rate = 0.35
+n_epoch = 1000
 n_hidden = 5
 scores = evaluate_algorithm(dataset, back_propagation, n_folds, l_rate, n_epoch, n_hidden)
 print('Scores: %s' % scores)
