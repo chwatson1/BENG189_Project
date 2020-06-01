@@ -4,6 +4,7 @@ from random import randrange
 from random import random
 from csv import reader
 from math import exp
+import math
 
 # Load a CSV file
 def load_csv(filename):
@@ -93,7 +94,7 @@ def activate(weights, inputs):
 
 # Transfer neuron activation
 def transfer(activation):
-	return 1.0 / (1.0 + exp(-activation))
+	return math.tanh(activation)
 
 # Forward propagate input to a network output
 def forward_propagate(network, row):
