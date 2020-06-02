@@ -110,7 +110,7 @@ def forward_propagate(network, row):
 
 # Calculate the derivative of an neuron output
 def transfer_derivative(output):
-	return output * (1.0 - output)
+	return 1 - (math.tanh(output)*math.tanh(output))
 
 # Backpropagate error and store in neurons
 def backward_propagate_error(network, expected):
