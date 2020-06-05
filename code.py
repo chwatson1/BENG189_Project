@@ -1,9 +1,13 @@
-# Backprop on the Seeds Dataset
+# Backprop on the wdbc Dataset
 from random import seed
 from random import randrange
 from random import random
 from csv import reader
 from math import exp
+import math
+import numpy as np
+import sklearn
+from sklearn.metrics import confusion_matrix
 
 # Load a CSV file
 def load_csv(filename):
@@ -68,7 +72,7 @@ def accuracy_metric(actual, predicted):
 # Evaluate an algorithm using a cross validation split
 def evaluate_algorithm(dataset, algorithm, n_folds, *args):
 	folds = cross_validation_split(dataset, n_folds)
-	scores = list()
+	scores = list()	
 	for fold in folds:
 		train_set = list(folds)
 		train_set.remove(fold)
@@ -83,6 +87,24 @@ def evaluate_algorithm(dataset, algorithm, n_folds, *args):
 		accuracy = accuracy_metric(actual, predicted)
 		scores.append(accuracy)
 	return scores
+
+# Calculate the confusion matrix
+def calculate_confusion_matrix(dataset, algorithm, n_folds, *args):
+	folds = cross_validation_split(dataset, n_folds)
+	for fold in folds:
+		train_set = list(folds)
+		train_set.remove(fold)
+		train_set = sum(train_set, [])
+		test_set = list()
+		for row in fold:
+			row_copy = list(row)
+			test_set.append(row_copy)
+			row_copy[-1] = None
+		predicted = algorithm(train_set, test_set, *args)
+		actual = [row[-1] for row in fold]
+		accuracy = accuracy_metric(actual, predicted)
+	cm = confusion_matrix(actual,predicted)
+	return cm
 
 # Calculate neuron activation for an input
 def activate(weights, inputs):
@@ -109,7 +131,7 @@ def forward_propagate(network, row):
 
 # Calculate the derivative of an neuron output
 def transfer_derivative(output):
-	return output * (1.0 - output)
+	return output *(1-output)
 
 # Backpropagate error and store in neurons
 def backward_propagate_error(network, expected):
@@ -177,7 +199,7 @@ def back_propagation(train, test, l_rate, n_epoch, n_hidden):
 		predictions.append(prediction)
 	return(predictions)
 
-# Test Backprop on Seeds dataset
+# Test Backprop on wdbc dataset
 seed(1)
 # load and prepare data
 filename = 'wdbc_1.csv'
@@ -195,5 +217,8 @@ l_rate = 0.35
 n_epoch = 1000
 n_hidden = 5
 scores = evaluate_algorithm(dataset, back_propagation, n_folds, l_rate, n_epoch, n_hidden)
+cm = calculate_confusion_matrix(dataset, back_propagation, n_folds, l_rate, n_epoch, n_hidden)
 print('Scores: %s' % scores)
 print('Mean Accuracy: %.3f%%' % (sum(scores)/float(len(scores))))
+print('Confusion Matrix: %s' % cm)
+
